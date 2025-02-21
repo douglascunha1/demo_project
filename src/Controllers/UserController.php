@@ -53,10 +53,21 @@ class UserController {
      * @throws Exception
      */
     public function show(Request $request, Response $response, array $params): void {
+        if (!isset($params[0]) || !is_numeric($params[0])) {
+            $response->setStatusCode(HttpStatusCode::BAD_REQUEST);
+
+            View::render('errors/400', ['title' => 'Bad Request', 'message' => 'Invalid user ID.']);
+
+            return;
+        }
         $user = $this->userService->getUser($params[0]);
 
         if (!$user) {
-            $response->error('User not found', HttpStatusCode::NOT_FOUND);
+            $response->setStatusCode(HttpStatusCode::NOT_FOUND);
+
+            View::render('errors/404', ['title' => 'User Not Found', 'message' => 'User not found.']);
+
+            return;
         }
 
         View::render('user/show', ['user' => $user->toArray(), 'title' => "User Details"]);

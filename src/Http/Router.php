@@ -3,6 +3,8 @@
 namespace Src\Http;
 
 use Closure;
+use Exception;
+use Src\Views\View;
 
 /**
  * This class is responsible for routing the requests
@@ -31,6 +33,7 @@ class Router {
 
     /**
      * Handles the incoming request and executes the corresponding controller action.
+     * @throws Exception
      */
     public static function dispatch(): void {
         $requestPath = Request::path();
@@ -45,25 +48,22 @@ class Router {
                 [$controller, $method] = explode('@', $route['handler']);
 
                 if (!class_exists($controller)) {
-                    Response::json(['error' => true, 'message' => "Controller $controller not found"], 500);
-                    return;
+                    self::render500("Controller $controller not found");
                 }
 
                 $controllerInstance = new $controller();
 
                 if (!method_exists($controllerInstance, $method)) {
-                    Response::json(['error' => true, 'message' => "Method $method not found in $controller"], 500);
-                    return;
+                    self::render500("Method $method not found in $controller");
                 }
 
-                // Execute the controller action
                 echo $controllerInstance->$method(new Request(), new Response(), $matches);
+
                 return;
             }
         }
 
-        // If no route matches
-        Response::json(['error' => true, 'message' => 'Route not found'], 404);
+        self::render404();
     }
 
     /**
@@ -73,5 +73,29 @@ class Router {
      */
     public static function routes(): array {
         return self::$routes;
+    }
+
+    /**
+     * Render the custom 404 page.
+     *
+     * @param string $message Optional error message.
+     * @throws Exception
+     */
+    private static function render404(string $message = "Page Not Found"): void {
+        http_response_code(404);
+        View::render('errors/404', ['message' => $message]);
+        exit;
+    }
+
+    /**
+     * Render the custom 500 page.
+     *
+     * @param string $message Optional error message.
+     * @throws Exception
+     */
+    private static function render500(string $message = "Internal Server Error"): void {
+        http_response_code(500);
+        View::render('errors/500', ['message' => $message]);
+        exit;
     }
 }
