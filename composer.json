@@ -1,0 +1,14 @@
+{
+    "name": "demo/demo",
+    "description": "Demo project",
+    "type": "project",
+    "require": {
+        "php": ">= 8.0",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    }
+}

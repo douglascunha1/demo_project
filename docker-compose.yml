@@ -1,0 +1,50 @@
+services:
+  # PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  # MySQL Service
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: demo
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+    # Composer Service
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: composer install --ignore-platform-reqs
+    depends_on:
+      - app
+
+volumes:
+  dbdata:
+
+networks:
+  app-network:
+    driver: bridge
