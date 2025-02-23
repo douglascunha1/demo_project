@@ -38,12 +38,14 @@ class Request {
     /**
      * Get the query parameters from the request
      *
+     * @param bool $valuesOnly If true, returns only the values without keys
      * @return array
      */
-    public static function query(): array {
+    public static function query(bool $valuesOnly = false): array {
         $queryString = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
         parse_str($queryString, $queryParameters);
-        return $queryParameters;
+
+        return $valuesOnly ? array_values($queryParameters) : $queryParameters;
     }
 
     /**
@@ -55,6 +57,7 @@ class Request {
      */
     public static function input(string $key, mixed $default = null): mixed {
         $queryParameters = self::query();
+
         return $queryParameters[$key] ?? $default;
     }
 }

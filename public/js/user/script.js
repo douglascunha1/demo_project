@@ -10,7 +10,7 @@ function showUsers() {
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": "/api/users",
+            "url": "/api/users/search",
             "type": "GET",
             "dataSrc": "data"
         },
@@ -28,7 +28,23 @@ function showUsers() {
             }
         ],
         "pageLength": 20,
-        "lengthMenu": [20, 50, 100]
+        "lengthMenu": [20, 50, 100],
+        "order": [[0, "asc"]],
+        "language": {
+            "emptyTable": "No users found.",
+            "zeroRecords": "No users found.",
+            "info": "Showing _START_ to _END_ of _TOTAL_ users",
+            "infoEmpty": "Showing 0 to 0 of 0 users",
+            "infoFiltered": "(filtered from _MAX_ total users)",
+            "lengthMenu": "Show _MENU_ users",
+            "search": "Search:",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            }
+        }
     });
 }
 

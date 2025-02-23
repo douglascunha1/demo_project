@@ -124,7 +124,7 @@ class ScriptRunner {
      * @return void
      */
     public function run(): void {
-        $this->userInserter->insertMultipleUsers(1000000);
+        $this->userInserter->insertMultipleUsers(5);
     }
 }
 

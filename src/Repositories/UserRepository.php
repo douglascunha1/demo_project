@@ -51,29 +51,28 @@ class UserRepository {
      * @return array
      */
     public function findByFilters(UserFilters $userFilters): array {
-        $countQuery = "SELECT COUNT(*) as total FROM users WHERE 1=1";
         $params = [];
+        $conditions = [];
 
         if ($userFilters->getSearch()) {
-            $search = $userFilters->getSearch();
-            $countQuery .= " AND (name LIKE :search OR email LIKE :search)";
-            $params[':search'] = "%$search%";
+            $search = "%{$userFilters->getSearch()}%";
+            $conditions[] = "(name LIKE ? OR email LIKE ?)";
+            $params[] = $search;
+            $params[] = $search;
+        }
+
+        $countQuery = "SELECT COUNT(*) as total FROM users";
+        if (!empty($conditions)) {
+            $countQuery .= " WHERE " . implode(" AND ", $conditions);
         }
 
         $stmt = $this->pdo->prepare($countQuery);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
-        }
-        $stmt->execute();
+        $stmt->execute($params);
         $total = $stmt->fetchColumn();
 
-        $dataQuery = "SELECT * FROM users WHERE 1=1";
-        $params = [];
-
-        if ($userFilters->getSearch()) {
-            $search = $userFilters->getSearch();
-            $dataQuery .= " AND (name LIKE :search OR email LIKE :search)";
-            $params[':search'] = "%$search%";
+        $dataQuery = "SELECT * FROM users";
+        if (!empty($conditions)) {
+            $dataQuery .= " WHERE " . implode(" AND ", $conditions);
         }
 
         if ($userFilters->getOrderBy() && $userFilters->getOrderDir()) {
@@ -85,16 +84,13 @@ class UserRepository {
         if ($userFilters->getPage() && $userFilters->getPerPage()) {
             $offset = ($userFilters->getPage() - 1) * $userFilters->getPerPage();
             $limit = $userFilters->getPerPage();
-            $dataQuery .= " LIMIT :limit OFFSET :offset";
-            $params[':limit'] = $limit;
-            $params[':offset'] = $offset;
+            $dataQuery .= " LIMIT ? OFFSET ?";
+            $params[] = $limit;
+            $params[] = $offset;
         }
 
         $stmt = $this->pdo->prepare($dataQuery);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
-        }
-        $stmt->execute();
+        $stmt->execute($params);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return [

@@ -46,19 +46,19 @@ class UserController {
     }
 
     /**
-     * Get all users and return them as JSON
+     * Get all users by filters
      *
      * @param Request $request
      * @param Response $response
      * @return void
      */
-    public function showUsers(Request $request, Response $response): void {
+    public function showUsersByFilters(Request $request, Response $response): void {
         $draw = $request->input('draw');
         $start = $request->input('start');
         $length = $request->input('length');
-        $searchValue = $request->input('search.value');
-        $orderColumn = $request->input('order.0.column');
-        $orderDir = $request->input('order.0.dir');
+        $searchValue = $request->input('search')['value'];
+        $orderColumn = $request->input('order')['0']['column'];
+        $orderDir = $request->input('order')['0']['dir'];
 
         $page = ($start / $length) + 1;
         $perPage = $length;
@@ -80,6 +80,19 @@ class UserController {
             'recordsFiltered' => $users['total'] ?? 0,
             'data' => $users['data'] ?? []
         ]);
+    }
+
+    /**
+     * Get all users
+     *
+     * @param Request $request
+     * @param Response $response
+     * @return void
+     */
+    public function showUsers(Request $request, Response $response): void {
+        $users = $this->userService->getUsers();
+
+        $response->json($users);
     }
 
     /**
