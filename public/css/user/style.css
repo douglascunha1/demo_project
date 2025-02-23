@@ -1,0 +1,7 @@
+.ZebraDialog_Body {
+    overflow-x: hidden;
+}
+
+#editUserForm .form-control {
+    width: 95%;
+}

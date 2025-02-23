@@ -52,17 +52,17 @@ $(document).ready(function () {
                 <form id="editUserForm" class="container-fluid">
                     <input type="hidden" id="userId" name="id" value="${data.id}">
 
-                    <div class="mb-3">
+                    <div class="col-auto mb-3">
                         <label for="userName" class="form-label">Name</label>
                         <input type="text" class="form-control" id="userName" name="name" value="${data.name}" required maxlength="100">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="col-auto mb-3">
                         <label for="userEmail" class="form-label">Email</label>
                         <input type="email" class="form-control" id="userEmail" name="email" value="${data.email}" required maxlength="100">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="col-auto mb-3">
                         <label for="userPassword" class="form-label">Password</label>
                         <input type="password" class="form-control" id="userPassword" name="password" placeholder="Leave blank to keep current password" maxlength="255">
                     </div>
@@ -174,8 +174,8 @@ $(document).ready(function () {
                         </thead>
                         <tbody>
                             <tr>
-                                <td>${data.name}</td>
-                                <td>${data.email}</td>
+                                <td>${Utils.toTitleCase(data.name)}</td>
+                                <td>${Utils.toLowerCase(data.email)}</td>
                                 <td>${data.password}</td>
                             </tr>
                         </tbody>

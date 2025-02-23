@@ -2,6 +2,7 @@
 
 use Src\Models\User;
 use Src\Utils\AssetLoader;
+use Src\Utils\Functions;
 use Src\Views\View;
 ?>
 <!doctype html>
@@ -14,10 +15,12 @@ use Src\Views\View;
     <title><?php echo htmlspecialchars($title); ?></title>
     <?php echo AssetLoader::renderJs([
         '/dist/assets/main.js',
-        '/js/user/script.js'
+        '/js/user/script.js',
+        '/js/utils/Utils.js'
     ]); ?>
     <?php echo AssetLoader::renderCss([
-        '/dist/assets/style.css'
+        '/dist/assets/style.css',
+        '/css/user/style.css'
     ]); ?>
 </head>
 <body>
@@ -42,8 +45,8 @@ use Src\Views\View;
     <?php foreach ($users as $user) { ?>
         <tr>
             <th scope="row"><?php echo htmlspecialchars($user->getId()); ?></th>
-            <td><?php echo htmlspecialchars($user->getName()); ?></td>
-            <td><?php echo htmlspecialchars($user->getEmail()); ?></td>
+            <td><?php echo htmlspecialchars(Functions::toTitleCase($user->getName())); ?></td>
+            <td><?php echo htmlspecialchars(Functions::toLowerCase($user->getEmail())); ?></td>
             <td><?php echo htmlspecialchars($user->getPassword()); ?></td>
             <td>
                 <a data-id="<?php echo $user->getId(); ?>" class="btn btn-primary show-user">View</a>
