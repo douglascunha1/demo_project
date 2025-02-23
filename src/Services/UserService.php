@@ -45,4 +45,25 @@ class UserService {
     public function getUser(int $id): ?User {
         return $this->userRepository->findById($id);
     }
+
+    /**
+     * Update a user
+     *
+     * @param int $id
+     * @param array $user
+     * @return void
+     */
+    public function updateUser(int $id, array $user): void {
+        $this->userRepository->update($id, $user);
+    }
+
+    /**
+     * Delete a user
+     *
+     * @param int $id
+     * @return void
+     */
+    public function deleteUser(int $id): void {
+        $this->userRepository->delete($id);
+    }
 }

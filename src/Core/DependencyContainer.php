@@ -4,7 +4,6 @@ namespace Src\Core;
 
 use Exception;
 use PDO;
-use PDOException;
 use Src\Config\Database;
 
 class DependencyContainer {

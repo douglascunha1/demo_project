@@ -21,30 +21,34 @@ class View {
      * @throws Exception
      */
     public static function render(string $view, array $args = [], ?string $layout = null): void {
-        extract($args, EXTR_SKIP);
+        try {
+            extract($args, EXTR_SKIP);
 
-        $basePath = __DIR__ . '/../../resources/views/';
+            $basePath = __DIR__ . '/../../resources/views/';
 
-        $viewFile = "{$basePath}{$view}.php";
+            $viewFile = "{$basePath}{$view}.php";
 
-        if (!is_readable($viewFile)) {
-            throw new Exception("View '{$view}' not found at {$viewFile}");
-        }
-
-        if ($layout) {
-            $layoutFile = "{$basePath}layouts/{$layout}.php";
-
-            if (!is_readable($layoutFile)) {
-                throw new Exception("Layout '{$layout}' not found at {$layoutFile}");
+            if (!is_readable($viewFile)) {
+                throw new Exception("View '{$view}' not found at {$viewFile}");
             }
 
-            ob_start();
-            require $viewFile;
-            $content = ob_get_clean();
+            if ($layout) {
+                $layoutFile = "{$basePath}layouts/{$layout}.php";
 
-            require $layoutFile;
-        } else {
-            require $viewFile;
+                if (!is_readable($layoutFile)) {
+                    throw new Exception("Layout '{$layout}' not found at {$layoutFile}");
+                }
+
+                ob_start();
+                require $viewFile;
+                $content = ob_get_clean();
+
+                require $layoutFile;
+            } else {
+                require $viewFile;
+            }
+        } catch (Exception $e) {
+            throw new Exception("Failed to render view '{$view}': " . $e->getMessage());
         }
     }
 }

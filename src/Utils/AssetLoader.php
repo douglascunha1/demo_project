@@ -35,7 +35,82 @@ class AssetLoader {
         foreach ($files as $file) {
             $html .= '<script src="' . self::getAssetPath($file) . '"></script>' . PHP_EOL;
         }
+
         return $html;
+    }
+
+    /**
+     * Render font files as HTML link tags.
+     *
+     * @param array $files Array of font file paths (relative to the public directory).
+     * @return string
+     */
+    public static function renderFont(array $files): string {
+        $html = '';
+        foreach ($files as $file) {
+            $html .= '<link rel="stylesheet" href="' . self::getAssetPath($file) . '">' . PHP_EOL;
+        }
+        return $html;
+    }
+
+    /**
+     * Render Bootstrap CSS.
+     *
+     * @return string
+     */
+    public static function renderBootstrapCss(): string {
+        return self::renderCss([
+            '/css/bootstrap/bootstrap.min.css'
+        ]);
+    }
+
+    /**
+     * Render Bootstrap JS.
+     *
+     * @return string
+     */
+    public static function renderBootstrapJs(): string {
+        return self::renderJs([
+            '/js/bootstrap/bootstrap.bundle.min.js'
+        ]);
+    }
+
+    /**
+     * Render Bootstrap CSS and JS.
+     *
+     * @return string
+     */
+    public static function renderBootstrap(): string {
+        return self::renderBootstrapCss() . self::renderBootstrapJs();
+    }
+
+    /**
+     * Render jQuery.
+     *
+     * @return string
+     */
+    public static function renderjQuery(): string {
+        return self::renderJs([
+            '/js/jquery/jquery-3.7.1.min.js'
+        ]);
+    }
+
+    /**
+     * Render Font Awesome CSS.
+     *
+     * @return string
+     */
+    public static function renderFontAwesome(): string {
+        return self::renderFont([
+            '/fonts/fa-brands-400.ttf',
+            '/fonts/fa-brands-400.woff2',
+            '/fonts/fa-regular-400.ttf',
+            '/fonts/fa-regular-400.woff2',
+            '/fonts/fa-solid-900.ttf',
+            '/fonts/fa-solid-900.woff2',
+            '/fonts/fa-v4compatibility.ttf',
+            '/fonts/fa-v4compatibility.woff2'
+        ]);
     }
 
     /**
