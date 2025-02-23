@@ -41,9 +41,21 @@ class UserController {
      * @throws Exception
      */
     public function index(Request $request, Response $response): void {
+
+        View::render('user/users', ['title' => 'Home']);
+    }
+
+    /**
+     * Get all users and return them as JSON
+     *
+     * @param Request $request
+     * @param Response $response
+     * @return void
+     */
+    public function showUsers(Request $request, Response $response): void {
         $users = $this->userService->getUsers();
 
-        View::render('user/users', ['users' => $users, 'title' => 'Home']);
+        $response->json($users);
     }
 
     /**

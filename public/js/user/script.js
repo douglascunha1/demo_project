@@ -1,46 +1,93 @@
 $(document).ready(function () {
-    $(".delete-user").on('click', function () {
-        const userId = $(this).data('id');
-        const userRow = $(this).closest('tr');
+    showUsers();
+    showUser();
+    editUser();
+    deleteUser();
+});
 
-        new $.Zebra_Dialog({
-            type: "question",
-            title: "Delete user",
-            message: "Are you sure you want to delete this user?",
-            buttons: [
-                {
-                    caption: "Yes",
-                    callback: function () {
-                        $.ajax({
-                            url: "/users/" + userId,
-                            type: "DELETE",
-                            success: function (data) {
-                                $.toast({
-                                    text: "User deleted successfully.",
-                                    showHideTransition: 'slide',
-                                    icon: 'success'
-                                });
-
-                                userRow.remove();
-                            },
-                            error: function (e) {
-                                $.toast({
-                                    text: "Failed to delete user.",
-                                    showHideTransition: 'fade',
-                                    icon: 'error'
-                                });
-                            }
-                        });
-                    }
-                },
-                {
-                    caption: "No"
+function showUsers() {
+    $('#table-user').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": "/api/users",
+            "type": "GET",
+            "dataSrc": ""
+        },
+        "columns": [
+            { "data": "name" },
+            { "data": "email" },
+            { "data": "password" },
+            {
+                "data": null,
+                "render": function(data, type, row) {
+                    return '<a data-id="' + row.id + '" class="btn btn-primary show-user">View</a> ' +
+                        '<a data-id="' + row.id + '" class="btn btn-warning edit-user">Edit</a> ' +
+                        '<a data-id="' + row.id + '" class="btn btn-danger delete-user">Delete</a>';
                 }
-            ]
+            }
+        ]
+    });
+}
+
+function showUser() {
+    $(document).on('click', '.show-user', function (e) {
+        const userId = $(this).data('id');
+
+        $.ajax({
+            url: "/users/" + userId,
+            type: "GET",
+            dataType: "JSON",
+            success: function (data) {
+                const html = `
+                   <table class="table table-bordered table-striped table-hover">
+                        <thead class="table">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${Utils.toTitleCase(data.name)}</td>
+                                <td>${Utils.toLowerCase(data.email)}</td>
+                                <td>${data.password}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+
+                new $.Zebra_Dialog({
+                    type: "info",
+                    title: "User details",
+                    width: "75%",
+                    message: html,
+                    buttons: [
+                        {
+                            caption: "Close"
+                        }
+                    ]
+                });
+            },
+            error: function (e) {
+                new $.Zebra_Dialog({
+                    type: "error",
+                    title: "Error",
+                    message: "Failed to load user details.",
+                    buttons: [
+                        {
+                            caption: "Close"
+                        }
+                    ]
+                });
+            }
         });
     });
+}
 
-    $('.edit-user').on('click', function (e) {
+function editUser() {
+    $(document).on('click', '.edit-user', function (e) {
         const userId = $(this).data('id');
 
         $.ajax({
@@ -72,7 +119,7 @@ $(document).ready(function () {
                 const dialog = new $.Zebra_Dialog({
                     type: "info",
                     title: "Edit User",
-                    width: "75%",
+                    width: "50%",
                     message: html,
                     buttons: [
                         {
@@ -157,58 +204,47 @@ $(document).ready(function () {
             }
         });
     });
+}
 
-    $('.show-user').on('click', function (e) {
+function deleteUser() {
+    $(document).on('click', '.delete-user', function () {
         const userId = $(this).data('id');
+        const userRow = $(this).closest('tr');
 
-        $.ajax({
-            url: "/users/" + userId,
-            type: "GET",
-            dataType: "JSON",
-            success: function (data) {
-                const html = `
-                   <table class="table table-bordered table-striped table-hover">
-                        <thead class="table">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Password</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>${Utils.toTitleCase(data.name)}</td>
-                                <td>${Utils.toLowerCase(data.email)}</td>
-                                <td>${data.password}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                `;
+        new $.Zebra_Dialog({
+            type: "question",
+            title: "Delete user",
+            message: "Are you sure you want to delete this user?",
+            buttons: [
+                {
+                    caption: "Yes",
+                    callback: function () {
+                        $.ajax({
+                            url: "/users/" + userId,
+                            type: "DELETE",
+                            success: function (data) {
+                                $.toast({
+                                    text: "User deleted successfully.",
+                                    showHideTransition: 'slide',
+                                    icon: 'success'
+                                });
 
-                new $.Zebra_Dialog({
-                    type: "info",
-                    title: "User details",
-                    width: "75%",
-                    message: html,
-                    buttons: [
-                        {
-                            caption: "Close"
-                        }
-                    ]
-                });
-            },
-            error: function (e) {
-                new $.Zebra_Dialog({
-                    type: "error",
-                    title: "Error",
-                    message: "Failed to load user details.",
-                    buttons: [
-                        {
-                            caption: "Close"
-                        }
-                    ]
-                });
-            }
+                                userRow.remove();
+                            },
+                            error: function (e) {
+                                $.toast({
+                                    text: "Failed to delete user.",
+                                    showHideTransition: 'fade',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
+                },
+                {
+                    caption: "No"
+                }
+            ]
         });
     });
-});
+}

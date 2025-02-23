@@ -33,7 +33,6 @@ use Src\Views\View;
 <table class="table table-hover" id="table-user">
     <thead>
     <tr>
-        <th scope="col">ID</th>
         <th scope="col">Name</th>
         <th scope="col">Email</th>
         <th scope="col">Password</th>
@@ -41,20 +40,6 @@ use Src\Views\View;
     </tr>
     </thead>
     <tbody>
-    <?php /* @var User $user */ ?>
-    <?php foreach ($users as $user) { ?>
-        <tr>
-            <th scope="row"><?php echo htmlspecialchars($user->getId()); ?></th>
-            <td><?php echo htmlspecialchars(Functions::toTitleCase($user->getName())); ?></td>
-            <td><?php echo htmlspecialchars(Functions::toLowerCase($user->getEmail())); ?></td>
-            <td><?php echo htmlspecialchars($user->getPassword()); ?></td>
-            <td>
-                <a data-id="<?php echo $user->getId(); ?>" class="btn btn-primary show-user">View</a>
-                <a data-id="<?php echo $user->getId(); ?>" class="btn btn-warning edit-user">Edit</a>
-                <a data-id="<?php echo $user->getId(); ?>" class="btn btn-danger delete-user">Delete</a>
-            </td>
-        </tr>
-    <?php } ?>
     </tbody>
 </table>
 </body>
