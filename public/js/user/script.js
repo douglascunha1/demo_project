@@ -102,6 +102,9 @@ $(document).ready(function () {
                                             type: "success",
                                             title: "Success",
                                             message: "User updated successfully!",
+                                            onClose: function () {
+                                                location.reload();
+                                            },
                                             buttons: [
                                                 {
                                                     caption: "OK",
