@@ -53,9 +53,33 @@ class UserController {
      * @return void
      */
     public function showUsers(Request $request, Response $response): void {
-        $users = $this->userService->getUsers();
+        $draw = $request->input('draw');
+        $start = $request->input('start');
+        $length = $request->input('length');
+        $searchValue = $request->input('search.value');
+        $orderColumn = $request->input('order.0.column');
+        $orderDir = $request->input('order.0.dir');
 
-        $response->json($users);
+        $page = ($start / $length) + 1;
+        $perPage = $length;
+
+        $columns = ['name', 'email', 'password'];
+        $orderBy = $columns[$orderColumn] ?? 'id';
+
+        $users = $this->userService->getUsersByFilters([
+            'page' => $page,
+            'perPage' => $perPage,
+            'search' => $searchValue,
+            'orderBy' => $orderBy,
+            'orderDir' => $orderDir
+        ]);
+
+        $response->json([
+            'draw' => intval($draw),
+            'recordsTotal' => $users['total'] ?? 0,
+            'recordsFiltered' => $users['total'] ?? 0,
+            'data' => $users['data'] ?? []
+        ]);
     }
 
     /**

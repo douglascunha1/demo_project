@@ -8,11 +8,11 @@ $(document).ready(function () {
 function showUsers() {
     $('#table-user').DataTable({
         "processing": true,
-        "serverSide": false,
+        "serverSide": true,
         "ajax": {
             "url": "/api/users",
             "type": "GET",
-            "dataSrc": ""
+            "dataSrc": "data"
         },
         "columns": [
             { "data": "name" },
@@ -26,7 +26,9 @@ function showUsers() {
                         '<a data-id="' + row.id + '" class="btn btn-danger delete-user">Delete</a>';
                 }
             }
-        ]
+        ],
+        "pageLength": 20,
+        "lengthMenu": [20, 50, 100]
     });
 }
 

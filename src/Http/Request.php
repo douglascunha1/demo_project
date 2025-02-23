@@ -34,4 +34,27 @@ class Request {
     public static function body(): array {
         return json_decode(file_get_contents('php://input'), true) ?? [];
     }
+
+    /**
+     * Get the query parameters from the request
+     *
+     * @return array
+     */
+    public static function query(): array {
+        $queryString = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+        parse_str($queryString, $queryParameters);
+        return $queryParameters;
+    }
+
+    /**
+     * Get a specific query parameter
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public static function input(string $key, mixed $default = null): mixed {
+        $queryParameters = self::query();
+        return $queryParameters[$key] ?? $default;
+    }
 }

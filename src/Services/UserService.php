@@ -3,6 +3,7 @@
 namespace Src\Services;
 
 use Src\Models\User;
+use Src\Models\UserFilters;
 use Src\Repositories\UserRepository;
 
 /**
@@ -34,6 +35,23 @@ class UserService {
      */
     public function getUsers(): array {
         return $this->userRepository->findAll();
+    }
+
+    /**
+     * Find users by filters
+     *
+     * @param array $filters
+     * @return array
+     */
+    public function getUsersByFilters(array $filters): array {
+        $userFilters = UserFilters::createFromArray($filters);
+
+        $users = $this->userRepository->findByFilters($userFilters);
+
+        return [
+            'total' => $users['total'] ?? 0,
+            'data' => $users['data'] ?? []
+        ];
     }
 
     /**

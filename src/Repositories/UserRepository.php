@@ -5,6 +5,7 @@ namespace Src\Repositories;
 use PDO;
 use Src\Models\User;
 use Src\Core\DependencyContainer;
+use Src\Models\UserFilters;
 
 /**
  * Represents a user repository
@@ -41,6 +42,65 @@ class UserRepository {
         $users = $stmt->fetchAll();
 
         return array_map(fn($user) => new User($user), $users);
+    }
+
+    /**
+     * Find users by filters
+     *
+     * @param UserFilters $userFilters
+     * @return array
+     */
+    public function findByFilters(UserFilters $userFilters): array {
+        $countQuery = "SELECT COUNT(*) as total FROM users WHERE 1=1";
+        $params = [];
+
+        if ($userFilters->getSearch()) {
+            $search = $userFilters->getSearch();
+            $countQuery .= " AND (name LIKE :search OR email LIKE :search)";
+            $params[':search'] = "%$search%";
+        }
+
+        $stmt = $this->pdo->prepare($countQuery);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        $total = $stmt->fetchColumn();
+
+        $dataQuery = "SELECT * FROM users WHERE 1=1";
+        $params = [];
+
+        if ($userFilters->getSearch()) {
+            $search = $userFilters->getSearch();
+            $dataQuery .= " AND (name LIKE :search OR email LIKE :search)";
+            $params[':search'] = "%$search%";
+        }
+
+        if ($userFilters->getOrderBy() && $userFilters->getOrderDir()) {
+            $orderBy = $userFilters->getOrderBy();
+            $orderDir = strtoupper($userFilters->getOrderDir()) === 'DESC' ? 'DESC' : 'ASC';
+            $dataQuery .= " ORDER BY $orderBy $orderDir";
+        }
+
+        if ($userFilters->getPage() && $userFilters->getPerPage()) {
+            $offset = ($userFilters->getPage() - 1) * $userFilters->getPerPage();
+            $limit = $userFilters->getPerPage();
+            $dataQuery .= " LIMIT :limit OFFSET :offset";
+            $params[':limit'] = $limit;
+            $params[':offset'] = $offset;
+        }
+
+        $stmt = $this->pdo->prepare($dataQuery);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'total' => $total,
+            'data' => $data
+        ];
     }
 
     /**
