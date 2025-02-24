@@ -12,14 +12,21 @@ function showUsers() {
         "ajax": {
             "url": "/api/users/search",
             "type": "GET",
-            "dataSrc": "data"
+            "dataSrc": "data",
+            "data": function(d) {
+                if (!d.order || d.order.length === 0) {
+                    d.order = [{ column: 0, dir: 'asc' }];
+                }
+            }
         },
         "columns": [
-            { "data": "name" },
-            { "data": "email" },
-            { "data": "password" },
+            { "data": "name", "name": "name" },
+            { "data": "email", "name": "email" },
+            { "data": "password", "name": "password" },
             {
                 "data": null,
+                "name": "actions",
+                "orderable": false,
                 "render": function(data, type, row) {
                     return '<a data-id="' + row.id + '" class="btn btn-primary show-user">View</a> ' +
                         '<a data-id="' + row.id + '" class="btn btn-warning edit-user">Edit</a> ' +
