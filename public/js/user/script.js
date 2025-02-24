@@ -3,6 +3,7 @@ $(document).ready(function () {
     showUser();
     editUser();
     deleteUser();
+    reports();
 });
 
 function showUsers() {
@@ -10,7 +11,7 @@ function showUsers() {
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": "/api/users/search",
+            "url": "/users/showUsersByFilters",
             "type": "GET",
             "dataSrc": "data",
             "data": function(d) {
@@ -118,7 +119,6 @@ function editUser() {
         $.ajax({
             url: "/users/" + userId,
             type: "GET",
-            dataType: "JSON",
             success: function (data) {
                 const html = `
                 <form id="editUserForm" class="container-fluid">
@@ -139,7 +139,7 @@ function editUser() {
                         <input type="password" class="form-control" id="userPassword" name="password" placeholder="Leave blank to keep current password" maxlength="255">
                     </div>
                 </form>
-            `;
+                `;
 
                 const dialog = new $.Zebra_Dialog({
                     type: "info",
@@ -169,7 +169,6 @@ function editUser() {
                                     contentType: "application/json",
                                     data: JSON.stringify(formData),
                                     success: function (response) {
-
                                         new $.Zebra_Dialog({
                                             type: "success",
                                             title: "Success",
@@ -271,5 +270,34 @@ function deleteUser() {
                 }
             ]
         });
+    });
+}
+
+function reports() {
+    $(document).on('click', '.reports', function () {
+        const html = `
+            <div class="col-md-12 d-flex justify-content-between gap-4">
+                <select class="form-select w-100" id="exportSelect">
+                    <option value="pdf">PDF</option>
+                    <option value="excel">Excel</option>
+                </select>
+            </div>
+        `;
+        new $.Zebra_Dialog({
+            type: "info",
+            title: "User Reports",
+            message: html,
+            width: "25%",
+            buttons: [
+                {
+                    caption: "Export",
+                    callback: function () {
+                        const exportType = $("#exportSelect").val();
+                        const url = "/users/" + exportType;
+                        window.open(url, '_self');
+                    }
+                }
+            ]
+        })
     });
 }

@@ -124,7 +124,7 @@ class ScriptRunner {
      * @return void
      */
     public function run(): void {
-        $this->userInserter->insertMultipleUsers(5);
+        $this->userInserter->insertMultipleUsers(30000);
     }
 }
 
@@ -140,4 +140,4 @@ $endTime = microtime(true);
 
 $executionTime = $endTime - $startTime;
 
-echo "Tempo total de execução: " . number_format($executionTime, 2) . " segundos\n";
+echo "Execution time: " . floor($executionTime / 3600) . " hours, " . floor(($executionTime % 3600) / 60) . " minutes and " . ($executionTime % 60) . " seconds\n";
